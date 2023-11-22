@@ -54,12 +54,18 @@
       background-color: #777;
     }
 
+    .dropdown {
+      position: relative;
+    }
+
     .dropdown-content {
       display: none;
       position: absolute;
       background-color: #555;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       z-index: 1;
+      left: 0;
+      width: 100%; /* Set the width to 100% to cover the entire menu */
     }
 
     .dropdown-content a {
@@ -71,22 +77,23 @@
 
     .dropdown:hover .dropdown-content {
       display: block;
-      left: 0; /* Ajusta la posición del dropdown a la izquierda */
+      right: 0; /* Adjust the position of the dropdown to the right */
     }
 
-    /* Estilos para hacer el menú responsive */
+    /* Styles for responsive design */
     @media only screen and (max-width: 600px) {
       nav {
         flex-direction: column;
-        align-items: flex-start; /* Alinea el contenido a la izquierda en dispositivos móviles */
+        align-items: flex-start;
       }
 
-      .dropdown:hover .dropdown-content {
-        left: -20px; /* Ajusta la posición del dropdown a la izquierda en dispositivos móviles */
+      .dropdown-content {
+        left: 0;
+        right: auto; /* Reset right property for mobile */
       }
 
       nav a {
-        text-align: left; /* Alinea el texto a la izquierda en dispositivos móviles */
+        text-align: left;
         margin-bottom: 10px;
       }
 
@@ -113,7 +120,9 @@
       }
 
       .menu.show {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
       }
     }
   </style>
