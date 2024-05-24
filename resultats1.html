@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Responsive Navbar with Tailwind CSS</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <title>CSV to Plot</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js" integrity="sha512-V0j9LhrK9IMNdFYZqh+IqU4cjo7wdxyHNyH+L0td4HryBuZ7Oq6QxP2/CWr6TituX31+gv5PnolvERuTbz8UNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #upload-button {
+      margin-top: 20px;
+    }
+    #error-div {
+      color: red;
+    }
+    #statistics-table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #statistics-table th, #statistics-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    #statistics-table th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+  </style>
+
 </head>
 <body class="bg-white shadow-lg">
 
