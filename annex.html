@@ -97,11 +97,17 @@
   <br>
 
 
-  <label for="csv-select">Select CSV:</label>
-  <select id="csv-select">
-    <option value="csv1">CSV 1</option>
-    <option value="csv2">CSV 2</option>
-  </select><br><br>
+  <h1>CSV to Plot</h1>
+  <input type="file" id="file-input" accept=".csv"><br><br>
+
+  <label for="plot-title">Plot Title:</label>
+  <input type="text" id="plot-title" placeholder="Enter plot title"><br><br>
+
+  <label for="x-axis-label">X-axis Label:</label>
+  <input type="text" id="x-axis-label" placeholder="Enter X-axis label"><br><br>
+
+  <label for="y-axis-label">Y-axis Label:</label>
+  <input type="text" id="y-axis-label" placeholder="Enter Y-axis label"><br><br>
 
   <label for="orientation">Orientation:</label>
   <select id="orientation">
@@ -136,32 +142,22 @@
 
   <script>
     document.getElementById("upload-button").addEventListener("click", function() {
-      // Hardcoded CSV data
-      var csvData1 = `compost A,compost B,compost C
-      -7.34,-6.23,-6.54
-      -7.1,-8.8,-8.0
-      -9.0,-6.0,-6.5`;
+      var fileInput = document.getElementById("file-input");
+      var file = fileInput.files[0];
+      if (!file) {
+        document.getElementById("error-div").innerHTML = "Please select a CSV file.";
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function() {
+        var csvData = reader.result;
+        try {
+          var data = Papa.parse(csvData, { header: true });
+          var plotData = [];
+          var orientation = document.getElementById("orientation").value;
+          var plotType = document.getElementById("plot-type").value;
 
-      var csvData2 = `compost D,compost E,compost F
-      -7.4,-8.23,-8.54
-      -7.1,-6.8,-6.0
-      -9.0,-5.0,-6.5`;
-
-      var csvSelect = document.getElementById("csv-select").value;
-      var selectedData = csvSelect === "csv1" ? csvData1 : csvData2;
-
-      var plotTitle = "Comparative Analysis of Compounds";
-      var xAxisLabel = "Compounds";
-      var yAxisLabel = "Values";
-
-      try {
-        var data = Papa.parse(selectedData, { header: true });
-        var plotData = [];
-        var orientation = document.getElementById("orientation").value;
-        var plotType = document.getElementById("plot-type").value;
-
-        function preparePlotData(data) {
-          var traces = [];
+          // Handle different plot types
           if (plotType === "violin" || plotType === "box") {
             for (var i = 0; i < data.meta.fields.length; i++) {
               var trace = {
@@ -181,13 +177,14 @@
                   return !isNaN(value);
                 });
               }
-              traces.push(trace);
+              plotData.push(trace);
             }
           } else if (plotType === "bar") {
             var fieldMeans = [];
             var fieldStdDevs = [];
             var fieldNames = [];
 
+            // Calculate mean and standard deviation for each field
             data.meta.fields.forEach(function(field) {
               var values = data.data.map(function(row) {
                 return parseFloat(row[field]);
@@ -223,39 +220,35 @@
                 visible: true
               };
             }
-            traces.push(trace);
+            plotData.push(trace);
+          } else if (plotType === "statistics") {
+            displayStatistics(data);
+            return;
           }
-          return traces;
-        }
 
-        if (plotType === "statistics") {
-          displayStatistics(data);
-          return;
-        } else {
-          plotData = preparePlotData(data);
-        }
+          var layout = {
+            title: document.getElementById("plot-title").value || "Graph Plot",
+            xaxis: {
+              title: document.getElementById("x-axis-label").value || "Columns"
+            },
+            yaxis: {
+              title: document.getElementById("y-axis-label").value || "Values"
+            }
+          };
 
-        var layout = {
-          title: plotTitle,
-          xaxis: {
-            title: xAxisLabel
-          },
-          yaxis: {
-            title: yAxisLabel
+          if (orientation === "horizontal") {
+            layout.yaxis = { title: document.getElementById("x-axis-label").value || "Columns" };
+            layout.xaxis = { title: document.getElementById("y-axis-label").value || "Values" };
           }
-        };
 
-        if (orientation === "horizontal") {
-          layout.yaxis = { title: xAxisLabel };
-          layout.xaxis = { title: yAxisLabel };
+          Plotly.newPlot("plot-div", plotData, layout);
+          document.getElementById("statistics-table").style.display = "none";
+          document.getElementById("error-div").innerHTML = "";
+        } catch (error) {
+          document.getElementById("error-div").innerHTML = "Error: " + error.message;
         }
-
-        Plotly.newPlot("plot-div", plotData, layout);
-        document.getElementById("statistics-table").style.display = "none";
-        document.getElementById("error-div").innerHTML = "";
-      } catch (error) {
-        document.getElementById("error-div").innerHTML = "Error: " + error.message;
-      }
+      };
+      reader.readAsText(file);
     });
 
     function displayStatistics(data) {
@@ -293,35 +286,4 @@
   </script>
 
 
-    
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum scelerisque mauris, eu tempor arcu semper a. Mauris sed libero pretium, congue eros lobortis, lobortis risus. Aliquam id diam dolor. Aliquam tellus lacus, vulputate fringilla consectetur efficitur, gravida sed augue. Curabitur et porttitor tortor, ac pellentesque orci. Donec quis dapibus lectus. Nam gravida malesuada ullamcorper.</p><br>
-<figure>
-      <img src="logo.png" alt="Figura 1. Imatge de prova"> <!-- Agrega la imagen Figura 1 -->
-      <figcaption>Figura 1. Imatge de prova</figcaption><br>
-    <p>Nunc sit amet tristique magna, sed lobortis dolor. Suspendisse efficitur massa dolor, a sollicitudin metus scelerisque ac. Cras vehicula nisl in eros rhoncus, quis placerat nisl fermentum. Quisque venenatis dictum mi et congue. Sed lacus ipsum, imperdiet vel leo ac, euismod cursus ligula. Vivamus turpis ipsum, blandit non facilisis ac, fermentum egestas nulla. Cras turpis enim, interdum non orci quis, mattis viverra diam. Suspendisse sagittis molestie ornare. Cras nunc nulla, tincidunt eu lacus eu, tempus porta diam. Donec eu sollicitudin erat, eu aliquam ante. Phasellus nibh ipsum, convallis sit amet pulvinar viverra, posuere eget orci. Morbi sagittis enim sed erat auctor, id pretium velit sodales. Maecenas gravida fermentum sem, eget sollicitudin lacus eleifend non. Aliquam nulla dui, bibendum eget leo tincidunt, pellentesque venenatis urna.</p>
-  </div>
-
-  <script>
-    const hamburger = document.getElementById('hamburger');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const resultatsButton = document.getElementById('resultats-button');
-    const resultatsDropdown = document.getElementById('resultats-dropdown');
-    const mobileResultatsButton = document.getElementById('mobile-resultats-button');
-    const mobileResultatsDropdown = document.getElementById('mobile-resultats-dropdown');
-
-    hamburger.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
-    });
-
-    resultatsButton.addEventListener('click', () => {
-      resultatsDropdown.classList.toggle('hidden');
-    });
-
-    mobileResultatsButton.addEventListener('click', () => {
-      mobileResultatsDropdown.classList.toggle('hidden');
-    });
-  </script>
-
-</body>
-</html>
-
+  
