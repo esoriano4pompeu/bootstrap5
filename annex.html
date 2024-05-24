@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Navbar with Tailwind CSS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>CSV to Plot</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js" integrity="sha512-V0j9LhrK9IMNdFYZqh+IqU4cjo7wdxyHNyH+L0td4HryBuZ7Oq6QxP2/CWr6TituX31+gv5PnolvERuTbz8UNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #upload-button {
+      margin-top: 20px;
+    }
+    #error-div {
+      color: red;
+    }
+    #statistics-table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    #statistics-table th, #statistics-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    #statistics-table th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+  </style>
+
+</head>
+<body class="bg-white shadow-lg">
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex">
+          <div class="shrink-0 flex items-center">
+            <!-- Logo -->
+            <img src="logo.png" alt="Logo" class="h-8 w-8 mr-2">
+            <a href="#" class="text-xl font-bold">Treball de Recerca</a>
+          </div>
+          <div class="hidden md:flex md:items-center md:space-x-8 ml-8">
+            <a href="#introduccio" class="text-gray-700 hover:text-gray-900">Introducció</a>
+            <a href="#materials-metodes" class="text-gray-700 hover:text-gray-900">Materials i mètodes</a>
+            <div class="relative">
+              <button id="resultats-button" class="text-gray-700 hover:text-gray-900 focus:outline-none">Resultats</button>
+              <div id="resultats-dropdown" class="absolute left-0 mt-2 w-48 bg-white border rounded shadow-lg hidden">
+                <a href="#resultats-1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 1</a>
+                <a href="#resultats-2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 2</a>
+                <a href="#resultats-3" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 3</a>
+              </div>
+            </div>
+            <a href="#conclusions" class="text-gray-700 hover:text-gray-900">Conclusions</a>
+            <a href="#bibliografia" class="text-gray-700 hover:text-gray-900">Bibliografia</a>
+            <a href="#annexe" class="text-gray-700 hover:text-gray-900">Annexe</a>
+          </div>
+        </div>
+        <div class="flex items-center md:hidden">
+          <button id="hamburger" class="text-gray-700 hover:text-gray-900 focus:outline-none">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden">
+      <a href="#introduccio" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Introducció</a>
+      <a href="#materials-metodes" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Materials i mètodes</a>
+      <div class="relative">
+        <button id="mobile-resultats-button" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 focus:outline-none">Resultats</button>
+        <div id="mobile-resultats-dropdown" class="hidden w-full bg-white border rounded shadow-lg">
+          <a href="#resultats-1" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 1</a>
+          <a href="#resultats-2" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 2</a>
+          <a href="#resultats-3" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Resultat 3</a>
+        </div>
+      </div>
+      <a href="#conclusions" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Conclusions</a>
+      <a href="#bibliografia" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Bibliografia</a>
+      <a href="#annexe" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Annexe</a>
+    </div>
+  </nav>
+  
+
+  <!-- Main Content -->
+  <div class="bg-white max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-justify">
+  <h1 class="text-3xl font-bold">Resultats d'acoblament de Ginkgo amb acetilcolinesterasa</h1>
+  <br>
+
+
+  <label for="csv-select">Select CSV:</label>
+  <select id="csv-select">
+    <option value="csv1">CSV 1</option>
+    <option value="csv2">CSV 2</option>
+  </select><br><br>
+
+  <label for="orientation">Orientation:</label>
+  <select id="orientation">
+    <option value="vertical">Vertical</option>
+    <option value="horizontal">Horizontal</option>
+  </select><br><br>
+
+  <label for="plot-type">Plot Type:</label>
+  <select id="plot-type">
+    <option value="violin">Violin Plot</option>
+    <option value="box">Box Plot</option>
+    <option value="bar">Bar Plot</option>
+    <option value="statistics">Data summary</option>
+  </select><br><br>
+
+  <button id="upload-button">Plot CSV</button>
+  <div id="plot-div"></div>
+  <div id="error-div"></div>
+  <table id="statistics-table" style="display: none;">
+    <thead>
+      <tr>
+        <th>Group</th>
+        <th>Mean</th>
+        <th>Standard Deviation</th>
+        <th>Minimum</th>
+        <th>Maximum</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById("upload-button").addEventListener("click", function() {
+      // Hardcoded CSV data
+      var csvData1 = `compost A,compost B,compost C
+      -7.34,-6.23,-6.54
+      -7.1,-8.8,-8.0
+      -9.0,-6.0,-6.5`;
+
+      var csvData2 = `compost D,compost E,compost F
+      -7.4,-8.23,-8.54
+      -7.1,-6.8,-6.0
+      -9.0,-5.0,-6.5`;
+
+      var csvSelect = document.getElementById("csv-select").value;
+      var selectedData = csvSelect === "csv1" ? csvData1 : csvData2;
+
+      var plotTitle = "Comparative Analysis of Compounds";
+      var xAxisLabel = "Compounds";
+      var yAxisLabel = "Values";
+
+      try {
+        var data = Papa.parse(selectedData, { header: true });
+        var plotData = [];
+        var orientation = document.getElementById("orientation").value;
+        var plotType = document.getElementById("plot-type").value;
+
+        function preparePlotData(data) {
+          var traces = [];
+          if (plotType === "violin" || plotType === "box") {
+            for (var i = 0; i < data.meta.fields.length; i++) {
+              var trace = {
+                type: plotType,
+                name: data.meta.fields[i]
+              };
+              if (orientation === "vertical") {
+                trace.y = data.data.map(function(row) {
+                  return parseFloat(row[data.meta.fields[i]]);
+                }).filter(function(value) {
+                  return !isNaN(value);
+                });
+              } else {
+                trace.x = data.data.map(function(row) {
+                  return parseFloat(row[data.meta.fields[i]]);
+                }).filter(function(value) {
+                  return !isNaN(value);
+                });
+              }
+              traces.push(trace);
+            }
+          } else if (plotType === "bar") {
+            var fieldMeans = [];
+            var fieldStdDevs = [];
+            var fieldNames = [];
+
+            data.meta.fields.forEach(function(field) {
+              var values = data.data.map(function(row) {
+                return parseFloat(row[field]);
+              }).filter(function(val) {
+                return !isNaN(val);
+              });
+              var mean = values.reduce((a, b) => a + b, 0) / values.length;
+              var stdDev = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / values.length);
+              fieldMeans.push(mean);
+              fieldStdDevs.push(stdDev);
+              fieldNames.push(field);
+            });
+
+            var trace = {
+              type: "bar",
+              name: "Mean",
+              orientation: orientation === "vertical" ? "v" : "h"
+            };
+            if (orientation === "vertical") {
+              trace.x = fieldNames;
+              trace.y = fieldMeans;
+              trace.error_y = {
+                type: 'data',
+                array: fieldStdDevs,
+                visible: true
+              };
+            } else {
+              trace.y = fieldNames;
+              trace.x = fieldMeans;
+              trace.error_x = {
+                type: 'data',
+                array: fieldStdDevs,
+                visible: true
+              };
+            }
+            traces.push(trace);
+          }
+          return traces;
+        }
+
+        if (plotType === "statistics") {
+          displayStatistics(data);
+          return;
+        } else {
+          plotData = preparePlotData(data);
+        }
+
+        var layout = {
+          title: plotTitle,
+          xaxis: {
+            title: xAxisLabel
+          },
+          yaxis: {
+            title: yAxisLabel
+          }
+        };
+
+        if (orientation === "horizontal") {
+          layout.yaxis = { title: xAxisLabel };
+          layout.xaxis = { title: yAxisLabel };
+        }
+
+        Plotly.newPlot("plot-div", plotData, layout);
+        document.getElementById("statistics-table").style.display = "none";
+        document.getElementById("error-div").innerHTML = "";
+      } catch (error) {
+        document.getElementById("error-div").innerHTML = "Error: " + error.message;
+      }
+    });
+
+    function displayStatistics(data) {
+      var tbody = document.querySelector("#statistics-table tbody");
+      tbody.innerHTML = "";
+
+      data.meta.fields.forEach(function(header) {
+        var values = data.data.map(function(row) {
+          return parseFloat(row[header]);
+        }).filter(function(value) {
+          return !isNaN(value);
+        });
+
+        var mean = values.reduce((a, b) => a + b, 0) / values.length;
+        var stddev = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / values.length);
+        var min = Math.min(...values);
+        var max = Math.max(...values);
+        var count = values.length;
+
+        var row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${header}</td>
+          <td>${mean.toFixed(2)}</td>
+          <td>${stddev.toFixed(2)}</td>
+          <td>${min.toFixed(2)}</td>
+          <td>${max.toFixed(2)}</td>
+          <td>${count}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("plot-div").innerHTML = "";
+      document.getElementById("statistics-table").style.display = "table";
+    }
+  </script>
+
+
+    
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum scelerisque mauris, eu tempor arcu semper a. Mauris sed libero pretium, congue eros lobortis, lobortis risus. Aliquam id diam dolor. Aliquam tellus lacus, vulputate fringilla consectetur efficitur, gravida sed augue. Curabitur et porttitor tortor, ac pellentesque orci. Donec quis dapibus lectus. Nam gravida malesuada ullamcorper.</p><br>
+<figure>
+      <img src="logo.png" alt="Figura 1. Imatge de prova"> <!-- Agrega la imagen Figura 1 -->
+      <figcaption>Figura 1. Imatge de prova</figcaption><br>
+    <p>Nunc sit amet tristique magna, sed lobortis dolor. Suspendisse efficitur massa dolor, a sollicitudin metus scelerisque ac. Cras vehicula nisl in eros rhoncus, quis placerat nisl fermentum. Quisque venenatis dictum mi et congue. Sed lacus ipsum, imperdiet vel leo ac, euismod cursus ligula. Vivamus turpis ipsum, blandit non facilisis ac, fermentum egestas nulla. Cras turpis enim, interdum non orci quis, mattis viverra diam. Suspendisse sagittis molestie ornare. Cras nunc nulla, tincidunt eu lacus eu, tempus porta diam. Donec eu sollicitudin erat, eu aliquam ante. Phasellus nibh ipsum, convallis sit amet pulvinar viverra, posuere eget orci. Morbi sagittis enim sed erat auctor, id pretium velit sodales. Maecenas gravida fermentum sem, eget sollicitudin lacus eleifend non. Aliquam nulla dui, bibendum eget leo tincidunt, pellentesque venenatis urna.</p>
+  </div>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const resultatsButton = document.getElementById('resultats-button');
+    const resultatsDropdown = document.getElementById('resultats-dropdown');
+    const mobileResultatsButton = document.getElementById('mobile-resultats-button');
+    const mobileResultatsDropdown = document.getElementById('mobile-resultats-dropdown');
+
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    resultatsButton.addEventListener('click', () => {
+      resultatsDropdown.classList.toggle('hidden');
+    });
+
+    mobileResultatsButton.addEventListener('click', () => {
+      mobileResultatsDropdown.classList.toggle('hidden');
+    });
+  </script>
+
+</body>
+</html>
+
