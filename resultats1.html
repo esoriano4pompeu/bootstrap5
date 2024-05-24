@@ -95,6 +95,209 @@
   <div class="bg-white max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-justify">
   <h1 class="text-3xl font-bold">Introducció</h1>
   <br>
+
+
+
+
+  <h1>CSV to Plot</h1>
+
+  <label for="csv-select">Select CSV:</label>
+  <select id="csv-select">
+    <option value="csv1">CSV 1</option>
+    <option value="csv2">CSV 2</option>
+  </select><br><br>
+
+  <label for="orientation">Orientation:</label>
+  <select id="orientation">
+    <option value="vertical">Vertical</option>
+    <option value="horizontal">Horizontal</option>
+  </select><br><br>
+
+  <label for="plot-type">Plot Type:</label>
+  <select id="plot-type">
+    <option value="violin">Violin Plot</option>
+    <option value="box">Box Plot</option>
+    <option value="bar">Bar Plot</option>
+    <option value="statistics">Data summary</option>
+  </select><br><br>
+
+  <button id="upload-button">Plot CSV</button>
+  <div id="plot-div"></div>
+  <div id="error-div"></div>
+  <table id="statistics-table" style="display: none;">
+    <thead>
+      <tr>
+        <th>Group</th>
+        <th>Mean</th>
+        <th>Standard Deviation</th>
+        <th>Minimum</th>
+        <th>Maximum</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById("upload-button").addEventListener("click", function() {
+      // Hardcoded CSV data
+      var csvData1 = `compost A,compost B,compost C
+      -7.34,-6.23,-6.54
+      -7.1,-8.8,-8.0
+      -9.0,-6.0,-6.5`;
+
+      var csvData2 = `compost D,compost E,compost F
+      -7.4,-8.23,-8.54
+      -7.1,-6.8,-6.0
+      -9.0,-5.0,-6.5`;
+
+      var csvSelect = document.getElementById("csv-select").value;
+      var selectedData = csvSelect === "csv1" ? csvData1 : csvData2;
+
+      var plotTitle = "Comparative Analysis of Compounds";
+      var xAxisLabel = "Compounds";
+      var yAxisLabel = "Values";
+
+      try {
+        var data = Papa.parse(selectedData, { header: true });
+        var plotData = [];
+        var orientation = document.getElementById("orientation").value;
+        var plotType = document.getElementById("plot-type").value;
+
+        function preparePlotData(data) {
+          var traces = [];
+          if (plotType === "violin" || plotType === "box") {
+            for (var i = 0; i < data.meta.fields.length; i++) {
+              var trace = {
+                type: plotType,
+                name: data.meta.fields[i]
+              };
+              if (orientation === "vertical") {
+                trace.y = data.data.map(function(row) {
+                  return parseFloat(row[data.meta.fields[i]]);
+                }).filter(function(value) {
+                  return !isNaN(value);
+                });
+              } else {
+                trace.x = data.data.map(function(row) {
+                  return parseFloat(row[data.meta.fields[i]]);
+                }).filter(function(value) {
+                  return !isNaN(value);
+                });
+              }
+              traces.push(trace);
+            }
+          } else if (plotType === "bar") {
+            var fieldMeans = [];
+            var fieldStdDevs = [];
+            var fieldNames = [];
+
+            data.meta.fields.forEach(function(field) {
+              var values = data.data.map(function(row) {
+                return parseFloat(row[field]);
+              }).filter(function(val) {
+                return !isNaN(val);
+              });
+              var mean = values.reduce((a, b) => a + b, 0) / values.length;
+              var stdDev = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / values.length);
+              fieldMeans.push(mean);
+              fieldStdDevs.push(stdDev);
+              fieldNames.push(field);
+            });
+
+            var trace = {
+              type: "bar",
+              name: "Mean",
+              orientation: orientation === "vertical" ? "v" : "h"
+            };
+            if (orientation === "vertical") {
+              trace.x = fieldNames;
+              trace.y = fieldMeans;
+              trace.error_y = {
+                type: 'data',
+                array: fieldStdDevs,
+                visible: true
+              };
+            } else {
+              trace.y = fieldNames;
+              trace.x = fieldMeans;
+              trace.error_x = {
+                type: 'data',
+                array: fieldStdDevs,
+                visible: true
+              };
+            }
+            traces.push(trace);
+          }
+          return traces;
+        }
+
+        if (plotType === "statistics") {
+          displayStatistics(data);
+          return;
+        } else {
+          plotData = preparePlotData(data);
+        }
+
+        var layout = {
+          title: plotTitle,
+          xaxis: {
+            title: xAxisLabel
+          },
+          yaxis: {
+            title: yAxisLabel
+          }
+        };
+
+        if (orientation === "horizontal") {
+          layout.yaxis = { title: xAxisLabel };
+          layout.xaxis = { title: yAxisLabel };
+        }
+
+        Plotly.newPlot("plot-div", plotData, layout);
+        document.getElementById("statistics-table").style.display = "none";
+        document.getElementById("error-div").innerHTML = "";
+      } catch (error) {
+        document.getElementById("error-div").innerHTML = "Error: " + error.message;
+      }
+    });
+
+    function displayStatistics(data) {
+      var tbody = document.querySelector("#statistics-table tbody");
+      tbody.innerHTML = "";
+
+      data.meta.fields.forEach(function(header) {
+        var values = data.data.map(function(row) {
+          return parseFloat(row[header]);
+        }).filter(function(value) {
+          return !isNaN(value);
+        });
+
+        var mean = values.reduce((a, b) => a + b, 0) / values.length;
+        var stddev = Math.sqrt(values.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / values.length);
+        var min = Math.min(...values);
+        var max = Math.max(...values);
+        var count = values.length;
+
+        var row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${header}</td>
+          <td>${mean.toFixed(2)}</td>
+          <td>${stddev.toFixed(2)}</td>
+          <td>${min.toFixed(2)}</td>
+          <td>${max.toFixed(2)}</td>
+          <td>${count}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById("plot-div").innerHTML = "";
+      document.getElementById("statistics-table").style.display = "table";
+    }
+  </script>
+
+
+    
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras elementum scelerisque mauris, eu tempor arcu semper a. Mauris sed libero pretium, congue eros lobortis, lobortis risus. Aliquam id diam dolor. Aliquam tellus lacus, vulputate fringilla consectetur efficitur, gravida sed augue. Curabitur et porttitor tortor, ac pellentesque orci. Donec quis dapibus lectus. Nam gravida malesuada ullamcorper.</p><br>
 <figure>
       <img src="logo.png" alt="Figura 1. Imatge de prova"> <!-- Agrega la imagen Figura 1 -->
