@@ -1,22 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="ca">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <title>Web d'alumne</title>
+    <title>Web d'Oscar</title>
+    <style>
+        body {
+            padding: 20px; /* Espai extra per als marges laterals */
+        }
+        .navbar-brand img {
+            position: absolute;
+            top: 10px; /* Ajusta la posició superior */
+            left: 10px; /* Ajusta la posició esquerra */
+        }
+        .content-container {
+            margin-left: 50px;
+            margin-right: 50px; /* Marges laterals ajustats */
+            margin-top: 20px; /* Afegeix espai superior entre el contingut i la barra de menú */
+        }
+    </style>
 </head>
 <body>
 
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <a class="navbar-brand" href="#"><img src="logo.png" alt="Logo" width="50"></a>
+        <a class="navbar-brand" href="#"><img src="logo.jpg" alt="Logo" width="50"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="#">Inici</a>
                 </li>
@@ -40,9 +57,23 @@
     </div>
 </nav>
 
-<!-- Inclou jQuery i Popper.js abans de Bootstrap.js -->
+<!-- Contingut principal -->
+<div class="content-container">
+    <h1>Web d'Oscar</h1>
+    <p>Benvingut a la meva web.</p>
+    <p>Em dic Oscar i sóc alumne de programació de 1r de batxillerat tecnològic de <a href="https://agora.xtec.cat/ies-pompeu-fabra-martorell/">l'institut Pompeu Fabra</a></p>
+    <p>A continuació veuràs un llistat amb diferents projectes que farem durant el curs:</p>
+    <ul>
+        <li>Creació d'una obra d'art geomètrica interactiva que reaccioni a la meva veu a través d'un micròfon i a diferents tecles del teclat, al ratolí, que faci moviments repetitius amb sin i cos, moviments aleatoris amb random... Utilitzarem p5.js.</li>
+        <li>Aliments ecològics i convencionals amb C++.</li>
+        <li>Contaminació atmosfèrica d'una ciutat catalana amb R.</li> 
+    </ul>
+</div>
+
+<!-- Scripts necessaris -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
 </body>
 </html>
